@@ -8,6 +8,11 @@ The workshop will take place in the "Parent" room at the Hotel Rimouski, from 13
 
 2. Rstudio, found at [Rstudio downloads][3]
 
+3. The `oce` (and optionally `ocedata`) package. These can be installed within R, from CRAN, by typing:
+```splus
+install.packages(c('oce', 'ocedata'))
+```
+
 Participants should feel free to bring specific questions and/or data sets, which we could try and address in the workshop.
 
 [1]: http://mirror.its.dal.ca/cran/
