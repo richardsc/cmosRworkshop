@@ -2,22 +2,80 @@
 <p>Idea -- DK could beef up some of the demo() items for oce. Too little thought has gone into these so far, with many of them amounting to <code>data(x);plot(x)</code> boilerplate.</p>
 <p>For example, the <code>demo(tide)</code> example might be neat for CMOS. It shows how to fit a tidal model, which is useful to many people, and it uses the standard dataset from Tuktoyaktuk (fun for Canadian content). DK needs to check that it gets coefficients similar to those from Mike Foreman though!!!</p>
 <p>(<strong>QUESTION</strong> how come the splus is not making the R be formatted here?)</p>
-<pre class="splus"><code>## Tidal analysis of Tuktoyaktuk sea level
-library(oce);
-data(sealevelTuktoyaktuk)
+<pre class="sourceCode r"><code class="sourceCode r">## Tidal analysis of Tuktoyaktuk sea level
+<span class="kw">library</span>(oce)</code></pre>
+<pre><code>## Loading required package: methods
+## Loading required package: mapproj
+## Loading required package: maps
+## Loading required package: ncdf4
+## Loading required package: tiff</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data</span>(sealevelTuktoyaktuk)
 ## Tidal model fitted with tidem()
-tide &lt;- tidem(sealevelTuktoyaktuk)
-summary(tide)
-## Extract data for plotting
-time &lt;- sealevelTuktoyaktuk[[&quot;time&quot;]]
-eta &lt;- sealevelTuktoyaktuk[[&quot;elevation&quot;]]
+tide &lt;-<span class="st"> </span><span class="kw">tidem</span>(sealevelTuktoyaktuk)
+<span class="kw">summary</span>(tide)</code></pre>
+<pre><code>## tidem summary
+## -------------
+## 
+## Call:
+## tidem(x = sealevelTuktoyaktuk)
+## RMS misfit to data:  0.7808 
+## 
+## Fitted model:
+##         Freq Amplitude  Phase       p    
+## Z0   0.00000   1.98062   0.00 &lt; 2e-16 ***
+## MM   0.00151   0.21213 263.34  0.0056 ** 
+## MSF  0.00282   0.15606 133.80  0.0070 ** 
+## ALP1 0.03440   0.01523 334.96  0.7421    
+## 2Q1  0.03571   0.02458  82.69  0.6791    
+## Q1   0.03722   0.01579  65.74  0.7681    
+## O1   0.03873   0.07641  74.23  0.1050    
+## NO1  0.04027   0.02903 238.14  0.3703    
+## K1   0.04178   0.13474  81.09  0.0767 .  
+## J1   0.04329   0.02530   7.32  0.5844    
+## OO1  0.04483   0.05310 235.75  0.2785    
+## UPS1 0.04634   0.02980  91.73  0.6617    
+## EPS2 0.07618   0.02115 184.60  0.7260    
+## MU2  0.07769   0.04189  83.23  0.4790    
+## N2   0.07900   0.08377  44.52  0.1966    
+## M2   0.08051   0.49041  77.70 7.4e-05 ***
+## L2   0.08202   0.02132  35.21  0.6934    
+## S2   0.08333   0.22024 137.48 3.2e-05 ***
+## ETA2 0.08507   0.00713 246.04  0.8878    
+## MO3  0.11924   0.01484 234.97  0.7517    
+## M3   0.12077   0.01226 261.57  0.8090    
+## MK3  0.12229   0.00492 331.60  0.9353    
+## SK3  0.12511   0.00234 237.67  0.9618    
+## MN4  0.15951   0.00917 256.47  0.8191    
+## M4   0.16102   0.01257 291.79  0.7779    
+## SN4  0.16233   0.00830 270.86  0.8396    
+## MS4  0.16384   0.00103 339.36  0.9802    
+## S4   0.16667   0.00468 299.56  0.9365    
+## 2MK5 0.20280   0.00127 310.16  0.9774    
+## 2SK5 0.20845   0.00455 104.00  0.9298    
+## 2MN6 0.24002   0.00353 271.22  0.9312    
+## M6   0.24153   0.00173 158.87  0.9672    
+## 2MS6 0.24436   0.00564 306.12  0.8989    
+## 2SM6 0.24718   0.00227 298.91  0.9676    
+## 3MK7 0.28331   0.00857 212.25  0.8383    
+## M8   0.32205   0.00304  42.38  0.9364    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## * Processing Log::
+##   * 2014-05-08 11:18:22.304 UTC: ``create &#39;tidem&#39; object``
+##   * 2014-05-08 11:18:22.305 UTC: ``tidem(x = sealevelTuktoyaktuk)``</code></pre>
+<pre class="sourceCode r"><code class="sourceCode r">## Extract data for plotting
+time &lt;-<span class="st"> </span>sealevelTuktoyaktuk[[<span class="st">&quot;time&quot;</span>]]
+eta &lt;-<span class="st"> </span>sealevelTuktoyaktuk[[<span class="st">&quot;elevation&quot;</span>]]
 ## Tidal prediction
-etap &lt;- predict(tide)
-# Display results in horizontally-stacked panels
-par(mfrow=c(3, 1))
-oce.plot.ts(time, eta, type=&#39;l&#39;, main=&quot;Sea level [m]&quot;) # note gaps
-plot(tide)
-oce.plot.ts(time, eta-etap, type=&#39;l&#39;, main=&quot;Residual sea level [m]&quot;)</code></pre>
+etap &lt;-<span class="st"> </span><span class="kw">predict</span>(tide)
+<span class="co"># Display results in horizontally-stacked panels</span>
+<span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">3</span>, <span class="dv">1</span>))
+<span class="kw">oce.plot.ts</span>(time, eta, <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;Sea level [m]&quot;</span>)  <span class="co"># note gaps</span>
+<span class="kw">plot</span>(tide)
+<span class="kw">oce.plot.ts</span>(time, eta -<span class="st"> </span>etap, <span class="dt">type =</span> <span class="st">&quot;l&quot;</span>, <span class="dt">main =</span> <span class="st">&quot;Residual sea level [m]&quot;</span>)</code></pre>
+<div class="figure">
+<img src="figure/unnamed-chunk-1.png" alt="plot of chunk unnamed-chunk-1" /><p class="caption">plot of chunk unnamed-chunk-1</p>
+</div>
 <p>The example shows:</p>
 <ul>
 <li>using built in datasets</li>

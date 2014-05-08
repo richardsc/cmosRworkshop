@@ -11,7 +11,7 @@ gets coefficients similar to those from Mike Foreman though!!!
 
 (**QUESTION** how come the splus is not making the R be formatted here?)
 
-```splus
+```{r}
 ## Tidal analysis of Tuktoyaktuk sea level
 library(oce);
 data(sealevelTuktoyaktuk)
