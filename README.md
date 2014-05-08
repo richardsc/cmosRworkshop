@@ -29,3 +29,5 @@ Participants should feel free to bring specific questions and/or data sets, whic
 * `oce/`: material related to introducting the `oce` package
 
 * `examples/`: some examples of common tasks/analysis
+
+* `sandbox/`: a sandbox for the workshop organizers to experiment with demos and ideas to use. 
