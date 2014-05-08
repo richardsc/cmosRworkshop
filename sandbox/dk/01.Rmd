@@ -9,11 +9,9 @@ to fit a tidal model, which is useful to many people, and it uses the standard
 dataset from Tuktoyaktuk (fun for Canadian content).  DK needs to check that it
 gets coefficients similar to those from Mike Foreman though!!!
 
-(**QUESTION** how come the splus is not making the R be formatted here?)
-
 ```{r}
 ## Tidal analysis of Tuktoyaktuk sea level
-library(oce);
+library(oce)
 data(sealevelTuktoyaktuk)
 ## Tidal model fitted with tidem()
 tide <- tidem(sealevelTuktoyaktuk)
