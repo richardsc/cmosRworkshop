@@ -1,0 +1,40 @@
+<p><strong>sandbox/dk/01</strong></p>
+<p>Idea -- DK could beef up some of the demo() items for oce. Too little thought has gone into these so far, with many of them amounting to <code>data(x);plot(x)</code> boilerplate.</p>
+<p>For example, the <code>demo(tide)</code> example might be neat for CMOS. It shows how to fit a tidal model, which is useful to many people, and it uses the standard dataset from Tuktoyaktuk (fun for Canadian content). DK needs to check that it gets coefficients similar to those from Mike Foreman though!!!</p>
+<p>(<strong>QUESTION</strong> how come the splus is not making the R be formatted here?)</p>
+<pre class="splus"><code>## Tidal analysis of Tuktoyaktuk sea level
+library(oce);
+data(sealevelTuktoyaktuk)
+## Tidal model fitted with tidem()
+tide &lt;- tidem(sealevelTuktoyaktuk)
+summary(tide)
+## Extract data for plotting
+time &lt;- sealevelTuktoyaktuk[[&quot;time&quot;]]
+eta &lt;- sealevelTuktoyaktuk[[&quot;elevation&quot;]]
+## Tidal prediction
+etap &lt;- predict(tide)
+# Display results in horizontally-stacked panels
+par(mfrow=c(3, 1))
+oce.plot.ts(time, eta, type=&#39;l&#39;, main=&quot;Sea level [m]&quot;) # note gaps
+plot(tide)
+oce.plot.ts(time, eta-etap, type=&#39;l&#39;, main=&quot;Residual sea level [m]&quot;)</code></pre>
+<p>The example shows:</p>
+<ul>
+<li>using built in datasets</li>
+<li>using tidem()</li>
+<li>using predict(), a <em>generic</em> function (a very important idea)</li>
+<li>using summary(), again a generic</li>
+<li>plotting time series with extra features like the time range</li>
+</ul>
+<p>Ideas for making it live:</p>
+<ul>
+<li>turn off the time range</li>
+<li>change to columns</li>
+<li><code>table(is.na(eta))</code> produces a very useful result with little effort</li>
+<li><code>fivenum(eta)</code> again is useful</li>
+<li><code>hist(eta)</code></li>
+<li><code>boxplot(eta)</code></li>
+</ul>
+<div class="figure">
+<img src="01resource.png" />
+</div>
