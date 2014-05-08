@@ -1,31 +1,39 @@
-**sandbox/dk/01**
+**sandbox/dk/01: tidal analysis**
 
-Idea -- DK could beef up some of the demo() items for oce.  Too little thought
-has gone into these so far, with many of them amounting to ``data(x);plot(x)``
-boilerplate.
-
-For example, the ``demo(tide)`` example might be neat for CMOS.  It shows how
-to fit a tidal model, which is useful to many people, and it uses the standard
-dataset from Tuktoyaktuk (fun for Canadian content).  DK needs to check that it
-gets coefficients similar to those from Mike Foreman though!!!
-
+Tidal analysis of Tuktoyaktuk sea level (as in Foreman's manual on tidal
+analysis, which produces same results as here).
 ```{r}
-## Tidal analysis of Tuktoyaktuk sea level
 library(oce)
 data(sealevelTuktoyaktuk)
-## Tidal model fitted with tidem()
+```
+
+Tidal model fitted with tidem()
+```{r}
 tide <- tidem(sealevelTuktoyaktuk)
 summary(tide)
-## Extract data for plotting
+```
+Extract data for plotting
+```{r}
 time <- sealevelTuktoyaktuk[["time"]]
 eta <- sealevelTuktoyaktuk[["elevation"]]
-## Tidal prediction
-etap <- predict(tide)
-# Display results in horizontally-stacked panels
-par(mfrow=c(3, 1))
-oce.plot.ts(time, eta, type='l', main="Sea level [m]") # note gaps
+```
+
+Plot the tidal model, created by a integrating component amplitudes over
+frequency.  Peak of graph says the total tidal signal is approximately 1.7m.
+```{r tidemodel,fig.cap="**Tidal model.**"}
 plot(tide)
-oce.plot.ts(time, eta-etap, type='l', main="Residual sea level [m]")
+```
+
+Plot observed sea level.  Note the data gaps, which pose no problem with
+regression-based tidal analysis but would be problematic for spectral analysis.
+```{r tide,fig.cap="**Observed sea level.**",fig.width=9}
+oce.plot.ts(time, eta, type='l', main="Sea level [m]", grid=TRUE) 
+```
+
+Plot the tidal residual.  (Do some audience members have ideas on what causes
+the variability?)
+```{r residual,fig.cap="**Tidal residual.**",fig.width=9}
+oce.plot.ts(time, eta-predict(tide), type='l', main="Residual sea level [m]", grid=TRUE)
 ```
 
 The example shows:
@@ -39,11 +47,7 @@ The example shows:
 Ideas for making it live:
 
 * turn off the time range
-* change to columns
 * ``table(is.na(eta))`` produces a very useful result with little effort
 * ``fivenum(eta)`` again is useful
-* ``hist(eta)``
-* ``boxplot(eta)``
-
-![](01resource.png)
+* ``hist(eta)`` , ``boxplot(eta)`` and similar plots may be informative
 

@@ -82,6 +82,7 @@ pre {
     white-space: pre-wrap;
     word-break: break-all;
     word-wrap: break-word;
+    margin-left: 2em;
 
     /* new: messes up with line numbered code */
     /*width: 620px; /* see span8 */

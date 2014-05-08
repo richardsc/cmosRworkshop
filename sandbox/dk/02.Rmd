@@ -1,4 +1,4 @@
-Goal: illustrate CTD work by finding outliers in TS diagram.
+**sandbox/dk/02: TS diagram with outlier detection**
 
 ```{r}
 library(oce)
@@ -6,7 +6,7 @@ data(ctd)
 ```
 
 Get an idea on the data
-```{r ctd,fig.cap="TS diagram"}
+```{r ctd,fig.cap="**TS diagram.  Note the scatter.**"}
 plotTS(ctd)
 ```
 
@@ -25,7 +25,7 @@ lines(predict(m)) # DISCUSS: it looks for "x" and "y" in the data
 ```
 
 S is not monotonic so this idea is nuts...go to density-spice space
-```{r sigthe_spice,fig.cap="sigma_theta - spice diagram"}
+```{r sigthe_spice,fig.cap="**sigma_theta - spice diagram.**"}
 sigthe <- ctd[["sigmaTheta"]]
 spice <- ctd[["spice"]]
 plot(sigthe, spice)
@@ -49,13 +49,13 @@ smooth curve but for the present purpose we actually *want* the predictions at
 the data locations.
 
 Deviation histogram
-```{r histogram,fig.cap="Histogram of spice deviation from spline."}
+```{r histogram,fig.cap="**Histogram of spice deviation from spline.**"}
 dev <- spice - predict(mm)$y
 hist(dev)
 ```
 
 Play with breaks; can show result of too many; maybe also show boxplot.
-```{r boxplot,fig.cap="Boxplot of spice deviation from spline."}
+```{r boxplot,fig.cap="**Boxplot of spice deviation from spline.**"}
 boxplot(dev)
 ```
 
@@ -83,15 +83,14 @@ bad <- abs(z) > qt(0.975, df=length(spice))
 table(bad) 
 ```
 Plot to see if we like the results
-```{r sigthe_spice_summary,fig.cap="Data with (blue) spline; red indicates outliers."}
+```{r sigthe_spice_summary,fig.cap="**Data with (blue) spline; red indicates outliers.**"}
 plot(sigthe, spice, col=ifelse(bad, "red", "black"), pch=20)
 lines(predict(mm), col='blue')
 ```
 
-Finally, a summary: put two plots together for those who like TS
-```{r summary,fig.cap="Summary diagram."}
-par(mfrow=c(1,2))
-plotTS(ctd, col=ifelse(bad, "red", "black"), pch=20)
-plot(sigthe, spice, col=ifelse(bad, "red", "black"), pch=20)
-abline(v=seq(22.5, 25, 0.5), col='gray')
+Finally, a summary in the more familiar TS space. 
+```{r summary,fig.cap="**Summary diagram, with red for anomalous points.**"}
+plotTS(ctd)
+theta <- ctd[["potential temperature"]]
+points(S[bad], theta[bad], col="red", pch=20, cex=2)
 ```
