@@ -1,0 +1,103 @@
+**sandbox/dk/03: read oddly-formatted (SOI) data**
+
+Sometimes data sets are simple, consisting of known binary or text formats, but
+sometimes we have to deal with odd formats that are one of a kind.  The SOI
+(Southern Oscillation Index) dataset at 
+[http://www.esrl.noaa.gov/psd/data/correlation/soi.data](http://www.esrl.noaa.gov/psd/data/correlation/soi.data) is a case in point  The first few lines are
+```
+        1948        2014
+1948 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99
+1949 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99
+1950 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99
+1951   2.50   1.50  -0.20  -0.50  -1.10   0.30  -1.70  -0.40  -1.80  -1.60  -1.30  -1.20
+1952  -1.50  -1.00   0.90  -0.40   1.20   1.20   0.80   0.10  -0.40   0.60   0.00  -2.00
+```
+Perhaps the format is defined somewhere (but more likely not), so what to do?
+
+The first-order options are (a) give up until proper documentation is found or
+(b) make some reasonable guesses.  So, what's reasonable?
+
+* The first line is probably a time range.
+* The other lines start with a number that could be a year, and the 12
+  following numbers may be monthly values (at start of month? middle?)
+* The value ``-99.99`` is likely a missing-value code.
+
+This suggests an easy way to read the data:
+```{r}
+d <- read.table("http://www.esrl.noaa.gov/psd/data/correlation/soi.data", skip=1, header=FALSE)
+```
+but there is an error.  Looking at the end of the file we see
+```
+2013  -0.10  -0.40   2.50   0.40   1.30   2.00   1.30   0.30   0.50  -0.10   1.20   0.10
+2014   2.40   0.10  -1.50   1.30 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99 -99.99
+  -99.99
+  SOI Index from CPC
+ http://www.esrl.noaa.gov/psd/data/climateindices/list/ for info
+```
+so this file evidently has a trailer as well as a header.  R is great with
+headers but trailers are harder to deal with.  A human might look at the line
+with a single number and think, "ahah that is telling us the missing-value
+code", and similarly would take some meaning in the other two lines.
+
+What to do?  
+
+**The cautious approach.** Verify these guesses about the data, by searching
+for documentation on the format.  But we may never actually find the format,
+and it could change at any time...
+
+**The quick and dirty approach.**  Download the data into a file, make a copy
+of the file and edit the header and trailer out of the new file, then work with
+that.
+
+**The somewhat more elegant approach.** Read the file with R, and apply some
+logic to find the data lines.  One approach might be to accept only lines with
+13 tokens, the first of which is a number that could be a year.
+```{r}
+d <- readLines("http://www.esrl.noaa.gov/psd/data/correlation/soi.data")
+dlen <- unlist(lapply(seq_along(d), function(i) nchar(d[i])))
+```
+(This is a quirk of the author -- calling temporary variables ``d`` to save typing.)
+
+Now, examine the lengths
+```{r}
+dlen
+```
+This suggests something one might notice looking at the website: the data lines are all of 
+the same length.  So we select just lines of that length
+```{r}
+d2 <- d[dlen == 88]
+```
+(Notice we keep ``d``, just in case ... always a good idea in interactive work.)
+
+Now we can ``scan()`` to get the data
+```{r}
+d3 <- scan(text=d2)
+```
+To clean up, we extract the years and make ``-99.99`` into a missing value.
+```{r}
+d4 <- d3[d3 < 1900]
+SOI <- d4[d4 > -99]
+```
+Notice the name switch from ``d`` (for some sort of temporary data) to ``SOI`` (for quantity
+of interest).
+
+It remains to construct a time vector
+```{r}
+year <- seq(from=d3[1], by=1/12, length.out=length(SOI))
+```
+
+Let's plot the results
+```{r soiplot,fig.cap="**Southern Oscillation Index (inferred here)**"}
+plot(year, SOI, type='l')
+```
+
+Postscript: serious work would, of course, involve some reading.  Just what the
+heck is this index?  There are several available online, with different
+definitions... for example, the ``soi`` dataset in the ``oce`` package has a
+similar pattern but different values.
+
+```{r soiplot2,fig.cap="**Southern Oscillation Index (in oce package)**"}
+library(oce)
+data(soi)
+plot(soi$year, soi$index, type='l', xlim=range(year))
+```
