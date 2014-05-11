@@ -10,7 +10,7 @@ X <- scan(url("http://www.esrl.noaa.gov/psd/data/correlation/soi.data"),
 # It is not just a list of values; year info is in the way; this is a table.
 nyears <- 2014 - 1948 + 1
 X <- read.table(url("http://www.esrl.noaa.gov/psd/data/correlation/soi.data"),
-                   skip=1, nrows=nyears)
+                skip=1, nrows=nyears)
 
 # Take a look
 head(X)
@@ -24,10 +24,10 @@ head(X)
 # Let us specify all this when reading the data
 rm(X)  # Clear name X
 X <- read.table(url("http://www.esrl.noaa.gov/psd/data/correlation/soi.data"),
-                 skip=1,
-                 nrows=nyears,
-                 col.names=c("year", month.name),
-                 na.strings=-99.99)
+                skip=1,
+                nrows=nyears,
+                col.names=c("year", month.name),
+                na.strings=-99.99)
 head(X)
 class(X)
 
