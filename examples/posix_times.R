@@ -32,7 +32,8 @@
 ###  * POSIXlt objects consist of a named list of vectors which is
 ###  closer to human readable form (see the help by doing `?POSIXt`)
 
-## The `Sys.time()` functions returns the current system time as a POSIX object
+## The `Sys.time()` functions returns the current system time as a
+## POSIX object
 Sys.time()
 class(Sys.time())
 
@@ -42,7 +43,8 @@ Sys.timezone()
 
 ## which for me gives "America/New_York"
 
-## To convert the current system time to UTC, use `with_tz` from the lubridate package
+## To convert the current system time to UTC, use `with_tz` from the
+## lubridate package
 library(lubridate)
 tt <- Sys.time()
 tt_utc <- with_tz(tt, 'UTC')
@@ -53,7 +55,10 @@ print(tt_utc)
 as.numeric(tt)
 as.numeric(tt_utc)
 
-## Notice that they are the same, despite the different time zone specification. The time zone is stored as an "attribute", which is taken into account when the POSIX-to-numeric conversion takes place:
+## Notice that they are the same, despite the different time zone
+## specification. The time zone is stored as an "attribute", which is
+## taken into account when the POSIX-to-numeric conversion takes
+## place:
 attributes(tt)
 ## See how tt_utc has a `tzone` attribute that says that it is UTC?
 attributes(tt_utc)
@@ -81,7 +86,8 @@ ttl$mon                                 #numbered 0 to 11
 ttl$wday                                #numbered 0 to 6
 ttl$yday                                #0 to 365
 
-## There are many functions for reading in characters of dates and times and converting them to POSIX objects. The most common are:
+## There are many functions for reading in characters of dates and
+## times and converting them to POSIX objects. The most common are:
 
 ## as.POSIXct and as.POSIXlt
 newtime1 <- as.POSIXct('2014-06-01 13:30:00', tz='UTC')  # assumes a
@@ -93,7 +99,9 @@ newtime1 <- as.POSIXct('2014-06-01 13:30:00', tz='UTC')  # assumes a
 ## strptime, creates POSIXlt
 newtime2 <- strptime('06/01/2014', format='%m/%d/%Y', tz='UTC') # requires format
 
-## The lubridate package contains a variety of conversion functions that can greatly simpify date/time conversion when reading data. Note that it defaults to UTC
+## The lubridate package contains a variety of conversion functions
+## that can greatly simpify date/time conversion when reading
+## data. Note that it defaults to UTC
 ymd('2014-06-01')
 ymd('20140601')
 ymd('14 jun 1')
@@ -110,7 +118,8 @@ ymd_hms('20140601133000')
 ymd_hms('2014-06-01 13:30:00')
 ymd_hms('2014-06-01T13:30:00')
 
-## lubridate can also be used to extract specific fields, similar to the POSIXlt class
+## lubridate can also be used to extract specific fields, similar to
+## the POSIXlt class
 day(tt)                                 #day of month
 yday(tt)                                #yearday -- note this is different from ttl$yday!!!
 wday(tt)                                #day of week -- also different from ttl$wday
@@ -135,16 +144,24 @@ class(tuk_time)
 ## extract the sealevel vector
 tuk_sl <- tuk[['elevation']]
 
-## plot the elevation time series -- note the automatic formatting of the x-axis. When the `x` argument to plot is a POSIX object, the labels are formatted appropriately.
+## plot the elevation time series -- note the automatic formatting of
+## the x-axis. When the `x` argument to plot is a POSIX object, the
+## labels are formatted appropriately.
 plot(tuk_time, tuk_sl, type='l')
 
-## if we are using the oce package, we can also use the `oce.plot.ts()` function, which behaves similarly but offers default plotting options that are more suited to plotting a time series
+## if we are using the oce package, we can also use the
+## `oce.plot.ts()` function, which behaves similarly but offers
+## default plotting options that are more suited to plotting a time
+## series
 oce.plot.ts(tuk_time, tuk_sl)
 
-## The time axis formatting can be controlled using the `format=` argument. To see the format options do `?strptime`
+## The time axis formatting can be controlled using the `format=`
+## argument. To see the format options do `?strptime`
 oce.plot.ts(tuk_time, tuk_sl, tformat='%b%Y')
 
-## Notice the number of time axis ticks has increased to be more useful, and a date/time range has been added to the upper left of the plot. The range can be suppressed with
+## Notice the number of time axis ticks has increased to be more
+## useful, and a date/time range has been added to the upper left of
+## the plot. The range can be suppressed with
 oce.plot.ts(tuk_time, tuk_sl, drawTimeRange = FALSE)
 grid()
 
@@ -162,7 +179,8 @@ cat_time <- c(tt_utc, tt_utc + 86400, tt_utc + 2*86400) #lost the timezone
 tz(cat_time) <- tzUTC
 cat_time                                #back to UTC
 
-## Another way to avoid this is to create an empty vector of the correct class and with the correct attributes first
+## Another way to avoid this is to create an empty vector of the
+## correct class and with the correct attributes first
 cat_time2 <- rep(NA, length(tuk_time))
 attributes(cat_time2) <- attributes(tuk_time) #make it POSIXct and tzone=UTC
 ## now fill it up
@@ -170,3 +188,18 @@ for (i in seq_along(tuk_time)) {
     cat_time2[i] <- tuk_time[i]
 }
 head(cat_time2)
+
+## What happens when we concatenate POSIX objects with different time zones?
+t1 <- now('America/New_York')
+t2 <- with_tz(t1, 'UTC')                #same time as t1 but in UTC time zone
+t3 <- c(t1, t2)
+
+## The numeric values are identical, and correspond to the number of
+## seconds since the epoch, so adding the UTC time zone attribute to
+## the object can be done afterd:
+
+## time zone attribute stripped, displays as EDT
+t3
+## Have to add a time zone to the object, but can only have one
+t3 <- with_tz(t3, 'UTC')
+t3
