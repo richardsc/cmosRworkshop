@@ -1,31 +1,21 @@
 # Plot July SST from Levitus atlas
 
-Load the SST data (from ``ocedata`` package, an adjunct to ``oce``).
+First, load the SST data (from ``ocedata`` package, an adjunct to ``oce``).
 ```{r}
-library(oce)
 data(levitus, package="ocedata")
-str(levitus)
-```
-
-R normally uses wide margins, with space for several lines of text.  But we are
-drawing a map without axes and so tightnen up the space to 1 line on each of
-four sides.
-%```{r}
-%```
-
-We will use a temperature range from -2C to 30C.
-```{r}
-Tlim <- c(-2, 30)
 ```
 
 Now, proceed to the plot.
-% tried dev='CairoPNG' but it produces Fontconf errors and looks no better
 ```{r SST,fig.path="figure/SST_",fig.width=8,fig.height=4,dpi=100,fig.cap="**Sea surface temperature.**"}
-par(mar=rep(1, 4))
-drawPalette(Tlim, col=oceColorsJet)
-# Start main plot with the coastline
+library(oce)                           # drawPalette() mapPlot() mapImage()
+Tlim <- c(-2, 30)                      # temperature range
+par(mar=rep(1, 4))                     # narrow the margins
+drawPalette(Tlim, col=oceColorsJet)    # like matlab "jet" scheme
+
+# Draw the coastline with Mollweide projection
 data(coastlineWorld)
 mapPlot(coastlineWorld, projection="mollweide", grid=FALSE)
+
 # Add the SST
 mapImage(levitus$longitude, levitus$latitude, levitus$SST,
          col=oceColorsJet, zlim=Tlim, missingColor='lightgray')
