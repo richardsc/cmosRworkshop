@@ -31,3 +31,10 @@ Participants should feel free to bring specific questions and/or data sets, whic
 * `examples/`: some examples of common tasks/analysis
 
 * `sandbox/`: a sandbox for the workshop organizers to experiment with demos and ideas to use. 
+
+
+## Some other resources
+
+* [R reference card][4]
+
+[4]: http://cran.r-project.org/doc/contrib/Short-refcard.pdf
