@@ -1,0 +1,32 @@
+# Basic oce object format
+
+`oce` uses S4 objects, with standard "slots" that separate:
+
+* `data`: the data of the object (e.g. temperature, salinity, pressure, etc)
+
+* `metadata`: relevant metadata created from the input file (e.g. instrument parameters, cruise name, lead PI, etc)
+
+* `processingLog`: a log of processing steps, with times, applied to the object (e.g. creation, subsetting, etc)
+
+Within an `oce` object, a particular item can be retrieved using the `[[` method, e.g. to get the temperature from a ctd object:
+
+```{r}
+library(oce)
+data(ctd)
+T <- ctd[['temperature']]
+```
+
+The data can also be accessed directly, by following the path through the slots, e.g.
+
+```{r}
+slotNames(ctd)
+T <- ctd@data$temperature
+```
+
+Note that the `@` character is used to designate slots, while `$` is used to designate the elements of each slot (which are themselves "lists"). 
+
+To get a look at the structure of the object, use the `str()` function (for "`str`ucture"):
+```{r}
+str(ctd)
+```
+
