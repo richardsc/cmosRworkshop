@@ -1,0 +1,54 @@
+# Tidal analysis of Tuktoyaktuk sea level
+
+**Conclusion.** The results match those in Foreman's manual on tidal analysis,
+which is also the source of the data used here.
+
+```{r}
+library(oce)
+data(sealevelTuktoyaktuk)
+```
+
+Tidal model fitted with tidem()
+```{r}
+tide <- tidem(sealevelTuktoyaktuk)
+summary(tide)
+```
+Extract data for plotting
+```{r}
+time <- sealevelTuktoyaktuk[["time"]]
+eta <- sealevelTuktoyaktuk[["elevation"]]
+```
+
+Plot the tidal model, created by a integrating component amplitudes over
+frequency.  Peak of graph says the total tidal signal is approximately 1.7m.
+```{r tidemodel,fig.path="figure/tidal_analysis",fig.cap="**Tidal model.**"}
+plot(tide)
+```
+
+Plot observed sea level.  Note the data gaps, which pose no problem with
+regression-based tidal analysis but would be problematic for spectral analysis.
+```{r tide,fig.path="figure/tidal_analysis",,fig.cap="**Observed sea level.**",fig.width=9}
+oce.plot.ts(time, eta, type='l', main="Sea level [m]", grid=TRUE) 
+```
+
+Plot the tidal residual.  (Do some audience members have ideas on what causes
+the variability?)
+```{r residual,fig.path="figure/tidal_analysis",,fig.cap="**Tidal residual.**",fig.width=9}
+oce.plot.ts(time, eta-predict(tide), type='l', main="Residual sea level [m]", grid=TRUE)
+```
+
+The example shows:
+
+* using built in datasets
+* using tidem()
+* using predict(), a *generic* function (a very important idea)
+* using summary(), again a generic
+* plotting time series with extra features like the time range
+
+Ideas for making it live:
+
+* turn off the time range
+* ``table(is.na(eta))`` produces a very useful result with little effort
+* ``fivenum(eta)`` again is useful
+* ``hist(eta)`` , ``boxplot(eta)`` and similar plots may be informative
+

@@ -1,0 +1,98 @@
+# Outlier detection in a TS diagram
+
+**Conclusion.** R statistical tools are useful in identifying TS outliers.
+
+```{r}
+library(oce)
+data(ctd)
+```
+
+Get an idea on the data
+```{r ctd,fig.path="figure/TS_outlier",fig.cap="**TS diagram.  Note the scatter.**"}
+plotTS(ctd)
+```
+
+Illustrate the ``[[]]`` method
+```{r}
+S <- ctd[["salinity"]]
+T <- ctd[["temperature"]]
+```
+NOTE: *never* use the TRUE=T notation!
+
+Get audience opinion on df, from eyeballing graph
+```{r}
+df <- 3
+m <- smooth.spline(S, T, df=df)
+lines(predict(m)) # DISCUSS: it looks for "x" and "y" in the data
+```
+
+S is not monotonic so this idea is nuts...go to density-spice space
+```{r sigthe_spice,fig.cap="**sigma_theta - spice diagram.**"}
+sigthe <- ctd[["sigmaTheta"]]
+spice <- ctd[["spice"]]
+plot(sigthe, spice)
+```
+
+New name for this spline -- not a good name but one easy to type (practical).
+```{r}
+mm <- smooth.spline(sigthe, spice, df=df)
+lines(predict(mm))
+```
+
+Probably want larger df ... can play a bit.
+```{r}
+df <- 10
+mm <- smooth.spline(sigthe, spice, df=df)
+lines(predict(mm), col='red')
+```
+
+The predictions are at *data locations*; optionally show them how to get a
+smooth curve but for the present purpose we actually *want* the predictions at
+the data locations.
+
+Deviation histogram
+```{r histogram,fig.path="figure/TS_outlier",fig.cap="**Histogram of spice deviation from spline.**"}
+dev <- spice - predict(mm)$y
+hist(dev)
+```
+
+Play with breaks; can show result of too many; maybe also show boxplot.
+```{r boxplot,fig.path="figure/TS_outlier",fig.cap="**Boxplot of spice deviation from spline.**"}
+boxplot(dev)
+```
+
+Note the outliers ... but we will make our own definition.
+
+Q to audience: anyone recognize this number?
+```{r}
+qnorm(0.975)
+```
+
+Note that we can do the "t" distribution as well!
+```{r}
+qt(0.975, df=9999)
+```
+note asymptote.  Nnow do for our
+```{r}
+qt(0.975, df=length(spice))
+```
+
+OK now for our method. Construct "z" values and identify those that seem
+unusual at 95% level.
+```{r}
+z <- (dev - mean(dev)) / sd(dev)
+bad <- abs(z) > qt(0.975, df=length(spice))
+table(bad) 
+```
+Plot to see if we like the results
+```{r sigthe_spice_summary,fig.path="figure/TS_outlier",fig.cap="**Data with (blue) spline; red indicates outliers.**"}
+plot(sigthe, spice, col=ifelse(bad, "red", "black"), pch=20)
+lines(predict(mm), col='blue')
+```
+
+Finally, a summary in the more familiar TS space. 
+```{r summary,fig.path="figure/TS_outlier",fig.cap="**Summary diagram, with red for anomalous points.**"}
+plotTS(ctd)
+theta <- ctd[["potential temperature"]]
+points(S[bad], theta[bad], col="red", pch=20, cex=2)
+```
