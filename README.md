@@ -37,4 +37,14 @@ Participants should feel free to bring specific questions and/or data sets, whic
 
 * [R reference card][4]
 
+* [Advanced R Programming][arp] by Hadley Wickham
+
+    * Hadley's [R vocabulary][rv]
+
 [4]: http://cran.r-project.org/doc/contrib/Short-refcard.pdf
+
+[arp]: http://adv-r.had.co.nz/
+
+[rv]: http://adv-r.had.co.nz/Vocabulary.html
+
+
