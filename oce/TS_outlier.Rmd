@@ -23,6 +23,7 @@ Get audience opinion on df, from eyeballing graph
 ```{r}
 df <- 3
 m <- smooth.spline(S, T, df=df)
+plotTS(ctd)
 lines(predict(m)) # DISCUSS: it looks for "x" and "y" in the data
 ```
 
@@ -36,6 +37,7 @@ plot(sigthe, spice)
 New name for this spline -- not a good name but one easy to type (practical).
 ```{r}
 mm <- smooth.spline(sigthe, spice, df=df)
+plot(sigthe, spice)
 lines(predict(mm))
 ```
 
@@ -43,6 +45,7 @@ Probably want larger df ... can play a bit.
 ```{r}
 df <- 10
 mm <- smooth.spline(sigthe, spice, df=df)
+plot(sigthe, spice)
 lines(predict(mm), col='red')
 ```
 
