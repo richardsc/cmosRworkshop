@@ -1,0 +1,16 @@
+**sandbox/dk/05: SST with mapImage(... colormap)**
+
+```{r 05-SST,fig.cap="July SST", fig.height=4, dpi=100}
+library(oce)
+data(levitus, package="ocedata")
+library(oce)
+Tlim <- c(-2, 30)
+par(mar=rep(1, 4))
+# Coastline with Mollweide projection
+cm <- colormap(zlim=Tlim, col=oceColorsJet)
+drawPalette(Tlim, colormap=cm)
+data(coastlineWorld)
+mapPlot(coastlineWorld, projection="mollweide", grid=FALSE)
+mapImage(levitus$longitude, levitus$latitude, levitus$SST,
+         colormap=cm)
+```
