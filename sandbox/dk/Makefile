@@ -1,4 +1,4 @@
-all: 01.html 02.html 03.html index.html
+all: 01.html 02.html 03.html 04.html index.html 
 %.md: %.Rmd
 	Rscript -e 'library(knitr);knit("$<")'
 %.html: %.md
