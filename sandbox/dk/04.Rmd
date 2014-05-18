@@ -1,14 +1,46 @@
 **sandbox/dk/04: imagep() with colormap**
 
-Salinity for the drifter dataset
-```{r 04,fig.cap="**Salinity section based on a drifter**"}
+Will use salinity from an Argo drifter (dataset included with oce).
+```{r}
 library(oce)
 data(drifter)
-cm <- colormap(zlim=c(33.5, 36), col=oceColorsJet)
+```
+
+Get an idea of the data contents with ``summary()``, a "generic" function whose
+action depends on the class of the object it is examining.
+```{r}
+summary(drifter)
+```
+
+Extract pressure, time, and salinity.  Note that pressure is a matrix, and that
+salinity is in a matrix that we transpose for plotting.
+```{r}
 p <- drifter[["pressure"]][,1] # note that p is a matrix
 t <- drifter[["time"]]
 S <- t(drifter[["salinity"]]) # note the transpose
-hist(S, xlim=c(33.5, 36), breaks=200) # the xlim from playing around — good for workshop
-imagep(t, p, S, colormap=cm, ylim=rev(range(p)))
+```
+
+For more details on salinity, try a histogram (the ``xlim`` came from fiddling
+around)
+```{r 04-histogram,fig.cap="Trimmed salinity histogram"}
+hist(S, xlim=c(33.5, 36), breaks=200)
+```
+
+OK, time to make a salinity section.  Construct a colourmap based on this
+```{r}
+cmS <- colormap(zlim=c(33.5, 36), col=oceColorsJet)
+```
+and then make an image graph (with a contour for fun)
+```{r 04-section,fig.cap="Salinity section in time-pressure space"}
+imagep(t, p, S, colormap=cmS, ylim=rev(range(p)))
 contour(t, p, S, level=35, add=TRUE, drawlabels=FALSE) # check a colour
+```
+
+Anyone think salinity was changing over time? To check, we can make a
+time-coded trajectory graph.
+```{r 04-map,fig.cap="Time-coded drifter trajectory"}
+year <- 2005 + (as.numeric(t) - as.numeric(as.POSIXct("2005-01-01"))) / 365 / 86400
+cmt <- colormap(year, col=oceColorsJet)
+drawPalette(colormap=cmt, zlab="Year")
+plot(drifter, pch=21, bg=cmt$col, mar=par('mar')) # note the mar trick
 ```
