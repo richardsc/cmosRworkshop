@@ -1,0 +1,29 @@
+# Demonstrate gridding and contouring
+
+Two methods are shown: (blue) a covariance-based method explained Modern
+Applied Statistics with S-Plus (Venables and Ripley, 1999) and (red) the Barnes
+iterative local-mean method.
+
+```{r gridding,fig.path='figure/gridding_',fig.width=8,fig.height=8,dpi=100,fig.cap="**Gridding**"}
+par(mar=c(2, 2, 1, 1), mgp=c(2, 0.7, 0))
+library(oce)
+library(spatial)
+library(MASS)
+## MASS suggested method
+glsModel <- surf.gls(np=2, covmod=expcov, x=topo, d=1)
+glow <- 0
+ghigh <- 6.5
+gn <- 100
+glsPred <- prmat(glsModel, glow,ghigh,glow,ghigh,gn)
+levels <- seq(0, 1000, 50)
+contour(glsPred, levels=levels, labcex=0.7, col='blue')
+points(topo$x, topo$y, pch=20)
+
+## Barnes method
+b <- interpBarnes(topo$x, topo$y, topo$z,
+                  xg=seq(glow, ghigh, length.out=gn),
+                  yg=seq(glow, ghigh, length.out=gn))
+contour(b$xg, b$yg, b$zg, col="red",
+        levels=levels, drawlabels=FALSE, add=TRUE)
+```
+

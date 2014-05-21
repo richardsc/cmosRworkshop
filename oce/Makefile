@@ -1,4 +1,4 @@
-all: tidal_analysis.html TS_outlier.html SST.html index.html
+all: tidal_analysis.html TS_outlier.html SST.html gridding.html index.html
 %.md: %.Rmd
 	Rscript -e 'library(knitr);knit("$<")'
 %.html: %.md
