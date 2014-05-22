@@ -27,7 +27,10 @@ contour(b$xg, b$yg, b$zg, col="red",
         levels=levels, drawlabels=FALSE, add=TRUE)
 ```
 
-For comparison, below is the result from ODV.  The steps to produce the graph are basically as follows.
+For comparison, below is the result from ODV.  (The steps to produce the graph
+are given below the diagram.)
+
+![odv](odv.png)
 
 1. Use an R script to make a fake dataset (``topo.txt`` in this directory.
 Then, do the following in ODV.
@@ -66,5 +69,4 @@ With steps like those above (and perhaps others) you'll get a window with the
 original map and also the desired plot.  Below is what I got when I trimmed to
 the latter.
 
-![odv](odv.png)
 
