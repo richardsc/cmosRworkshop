@@ -1,0 +1,191 @@
+Examples of Using the R "openair" Package for Model Evaluation
+========================================================
+
+#### by Junhua Zhang
+#### ARQI/AQRD/STB
+#### May 1,2014
+
+This documentation shows a few examples of how R and the “openair” package can be used for model evaluation purpose.  More detailed and sophisticated uses of the “openair” package are documented in its manual http://www.openair-project.org/Downloads/OpenAirManual.aspx.   The “openair” manual also provides excellent instruction on the basic concepts of R.
+
+1.Source Data
+------------------
+
+It is assumed that the observation and model data have already been paired and saved in csv format (**Note**:  It should be straightforward to extract model data based on station location (lat & lon) and time using a TCL/SPI script (local tools) and either nearest or interpolation method.  It is also possible to use the R **merge** function to pair the observational data and model data after those two sets of data have been loaded into R – see next section).  The table below shows the first few lines of paired NAPS measurements and GEM-MACH predicted values for comparison of O3, NO2, and NO during part of summer 2011 (June15 - July12).  The name of the file is **GMv2_2011.csv** 
+
+2. Loading Data into R
+----------------------
+The input data can be loaded into R using **read.csv** command and the data can be saved into a data frame.  Here the data are saved in a variable called **gmv2_2011**.
+
+```{r load_packages, include=FALSE}
+library("openair")
+library("RgoogleMaps")
+```
+
+```{r, cache=TRUE}
+## setwd("/Users/teaklesa/Documents/FromClarkRichards/GEM-MACH_Evaluation/")
+gmv2_2011 <- read.csv("GMv2_2011.csv", header = TRUE)
+``` 
+
+Once the data are loaded into R, we can use the R **head** function to list the data:
+
+```{r}
+head(gmv2_2011)
+``` 
+
+We can also use the R **summary** function to get some basic statistics for the data: minimum, maximum, mean, median, how many missing data (NA), etc.:
+
+```{r}
+summary(gmv2_2011)
+``` 
+
+3.  Basic Statistics Calculation
+---------------------------------
+The function **modStats** can be used to calculate a number of common statistics (FAC2, MB, MGE, NMB, NMGE, RMSE, r, and COE) for all stations, for individual stations, by land-use type, by wind direction, by month, by season, by weekday, by weekend, etc.   See below for a few examples:
+
+### a) O3 statistics for all stations for the whole period
+```{r, cache=TRUE}
+modStats(gmv2_2011, obs = "o3obs", mod = "o3mod")
+```
+
+### b) O3 statistics for all stations by month
+```{r, cache=TRUE}
+modStats(gmv2_2011, obs = "o3obs", mod = "o3mod",type = "month")
+```
+
+### c) By weekday and weekend
+```{r, cache=TRUE}
+modStats(gmv2_2011, obs = "o3obs", mod = "o3mod",type = "weekend")
+```
+
+### d) For each day of the week
+```{r, cache=TRUE}
+modStats(gmv2_2011, obs = "o3obs", mod = "o3mod",type = "weekday")
+```
+### e) By station
+For this one, we need to convert the **stationid** to **factor** type and use it to group the data by station.  The statistics will be saved in a data frame named **O3statistics**.
+
+```{r, cache=TRUE}
+gmv2_2011$stationid<-factor(gmv2_2011$stationid)
+O3statistics<-modStats(gmv2_2011, obs = "o3obs", mod = "o3mod", type='stationid')
+```
+We can then check to see what the statistics look like using the **head** function:
+```{r}
+head(O3statistics)
+```
+
+4.  Examples of Various Plots
+-----------------------------
+### a) Summary plot
+The **summaryPlot** function can be used to plot important aspects of the data, such as time series, histogram, mean, median, minimum, and maximum of the data.  It also provides information about how many data are missing.  It is always good to do this plot first to have an overall view of the data. e.g.,
+```{r,  fig.width=7, fig.height=6,cache=TRUE}
+summaryPlot(subset(gmv2_2011, select = c(date, o3obs, o3mod,no2obs,no2mod,noobs,nomod)),period='day')
+```
+**Note:** **subset** is used here to select a subset of the data (date, o3obs, o3mod, no2obs, no2mod, noobs, and nomod) for the plot.  Otherwise, all of the fields, including Latitude and Longitude, will be plotted.  **subset** is a very useful function to select a subset of the data.  For example, we can use it to select the data in a subregion on which to calculate statistics.
+
+### b) Time variation plots
+
+This is another useful summary plot.  With one function (**timeVariation**), it plots several time variations: hourly variation on each day of the week, average hourly variation, monthly variation, and daily variation on each day of the week, e.g., time variation of observed and modeled O3:
+#### Observed Time Variation
+```{r,  fig.width=7, fig.height=6, cache=TRUE}
+timeVariation(gmv2_2011, pollutant = "o3obs")
+```
+#### Modeled Time Variation
+```{r,  fig.width=7, fig.height=6, cache=TRUE}
+timeVariation(gmv2_2011, pollutant = "o3mod")
+```
+
+### c) Split time variation plots for two period
+
+The **splitByDate** function can be used to split the data into two periods and then plot the time variation for the two periods.  The example below shows the time variation of observed O3 split at June 28 (Note: because this dataset is only for a short time period: June 15-July 12, the monthly and weekday variation are not representative, but it gives the idea of how this analysis works).
+
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+gmv2_2011_new <- splitByDate(gmv2_2011, dates= "28/6/2011",
+                  labels = c("before Jun28 2011", "After Jun28 2011"))
+timeVariation(gmv2_2011_new, pollutant = "o3obs", group = "split.by")
+```
+
+### 4)  Correlation matrix plot
+The **corPlot** can be used to plot correlation among several variables, e.g.
+
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+corPlot(gmv2_2011,pollutant = c("o3obs","o3mod","no2obs","no2mod","noobs","nomod"))
+```
+### 5)  Scatter plots
+
+The **scatterplot** function can be used to make many useful plots. Here are few examples:
+
+#### a)	Density scatter plot
+
+The points of the scatter plot are color coded by the number of points.  It is useful to show where the majority of the points are, especially useful for large data sets. 
+
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+scatterPlot(gmv2_2011, x = "o3obs", y = "o3mod", method = "hexbin", col= "jet")
+```
+
+#### b)  Density scatter plot by month and by weekday/weekend
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+scatterPlot(gmv2_2011, x = "o3obs", y = "o3mod", method = "hexbin", col= "jet", type = c("month", "weekend"))
+```
+
+#### c)  Scatter plot colour-coded by a third variable
+
+The following scatter plot of O3obs vs O3mod is colour-coded by the modelled NO2 concentration.
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+scatterPlot(gmv2_2011,, x = "o3obs", y = "o3mod", z = "no2mod")
+```
+
+#### d)  Scatter plot colour-coded by third variable, by season, by weekday/weekend
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+scatterPlot(gmv2_2011,, x = "o3obs", y = "o3mod", z = "no2mod",type = c("season", "weekend"))
+```
+
+#### e)   Scatter plot colour-coded by third variable, by month, by weekday
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+scatterPlot(gmv2_2011,, x = "o3obs", y = "o3mod", z = "no2mod",type = c("month", "weekday"))
+```
+
+### 6) Plotting a Field on a Map
+
+The **GoogleMapsPlot** function can be used to plot a field on a map. As an example, several O3statistics will be plotted on a map below. To do this, the latitude and longitude of the stations are extracted from the original dataset and then merged with the O3statistics by the following two setups:
+
+#### s1) extract the lat, lon of each station using **subset** function and remove duplication using “!duplicated(stationid)”: 
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+stationLocation<-subset(subset(gmv2_2011,select = c("stationid","lat","lon")),!duplicated(stationid))
+```
+   
+#### s2) merge O3statistics with lat, lon for each station using the **merge** function
+```{r, fig.width=7, fig.height=6, cache=TRUE}
+O3statistics<-merge(O3statistics,stationLocation)
+```
+
+Below are a few examples of plotting station statistics on a map:
+
+#### a)  Plotting O3 correlation coefficients on a map for the whole domain
+```{r, fig.width=7, fig.height=6}
+require(RgoogleMaps)
+GoogleMapsPlot(O3statistics, lat = "lat", long = "lon", pollutant = "r",maptype = "roadmap", col = "jet",cex = 1, size =c(640,440))
+```
+
+#### b)  Plotting O3 MB on a map for a subdomain
+```{r, fig.width=7, fig.height=6}
+GoogleMapsPlot(subset(O3statistics, lat>= 40 & lon >=-90), lat = "lat", long = "lon", pollutant = "r",maptype = "roadmap", col = "jet",cex= 1, size =c(440,240))
+```
+#### c)  Plotting RMSE over the Greater Toronto Area
+```{r, fig.width=7, fig.height=6}
+GoogleMapsPlot(subset(O3statistics, lat < 44.0 & lat >43.5 & lon < -79.0 & lon > -80.0), lat = "lat", long = "lon", pollutant = "RMSE",maptype = "roadmap", col = "jet",cex= 3, size =c(500,500))
+```
+#### d)  Plotting RMSE over the GTA, but change the base map to a satellite image
+```{r, fig.width=7, fig.height=6}
+GoogleMapsPlot(subset(O3statistics, lat < 44.0 & lat >43.5 & lon < -79.0 & lon > -80.0), lat = "lat", long = "lon", pollutant = "RMSE",maptype = "satellite", col = "jet",cex= 3, size =c(500,500))
+```
+### 7) Taylor Diagram
+
+The **TaylorDiagram** function can be used to plot a Taylor diagram as shown below, as an example, for the comparison of O3 between model and observations. 
+```{r, fig.width=7, fig.height=6}
+TaylorDiagram(gmv2_2011, obs = "o3obs", mod = "o3mod")
+```
+
+As mentioned earlier, the **subset** function can be used to select a subregion.  Below is an example of the corresponding Taylor diagram for model predictions over the GTA:
+```{r,fig.width=7, fig.height=6}
+TaylorDiagram(subset(gmv2_2011,lat < 34 & lat >33 & lon < -111 & lon > -112), obs = "o3obs", mod = "o3mod")
+```
