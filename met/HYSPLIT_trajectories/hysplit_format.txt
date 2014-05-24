@@ -1,0 +1,43 @@
+#### Record #1
+I6 - Number of meteorological grids used in calculation
+ 
+#### Records #2 == > number of grids (loop)
+A8 - Meteorological Model identification
+
+5I6 - Data file starting Year, Month, Day, Hour, Forecast Hour
+ 
+#### Record #3
+I6 - number of different trajectories in file 
+
+A8 - direction of trajectory calculation (FORWARD/BACKWARD)
+
+A8 - vertical motion calculation method (OMEGA,THETA,...)
+ 
+#### Record #4 ==> number of different trajectories in file (loop)
+4I6 - starting year, month, day, hour
+
+2F8.3 - starting latitude, longitude
+
+F8.3 - starting level above ground (meters)
+ 
+#### Record #5
+I6 - number of diagnostic output variables
+nA8 - label identification of each variable (PRESSURE,THETA,...)
+ 
+#### Record #6 ==> through end of all endpoints (loop)
+I6 - trajectory number
+
+I6 - meteorological grid number
+
+5I6 - time of point: year month day hour minute
+
+I6 - forecast hour at point
+
+F8.1 - age of the trajectory in hours
+
+2F8.3 - position latitude and longitude
+
+F8.1 - position height in meters above ground
+
+nF8.1 - n diagnostic output variables (1st output is always 
+pressure)

@@ -4,3 +4,4 @@
 # Exclude met examples data (for now) as it is very large
 GEM_MACH_Evaluation/GMv2_2011.csv
 windsAndRain/data/
+HYSPLIT_trajectories/Trajectories/

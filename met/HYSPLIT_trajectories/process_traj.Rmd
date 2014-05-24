@@ -1,0 +1,171 @@
+Reading and Manipulating Trajectory Data in R
+========================================================
+
+### By Andrew Teakles
+##### Environment Canada
+##### 201-401 Burrard St
+##### Vancouver, V6C 3S5
+##### May 22, 2014
+
+This document demonstrate how to tailor an ascii read function to ingest HYSPLIT Trajectory data. An archive of HYSPLIT files are aggregated together then visualized in **ggplot**.  Afterwards, the coordinate data is compiled into shapefiles within R and then rasterized using the **raster** package.
+
+### 1. List Trajectory Files and Filter as needed.
+This example study collected a series of HYSPLIT back-trajectories with a variety of receptor heights
+
+```{r}
+library("stringr")
+library("plyr")
+
+HYSPLIT_dir="./Trajectories/"
+traj_files_all=list.files(HYSPLIT_dir)
+head(traj_files_all)
+```
+List files only at 50 m receptor height.  
+The **glob2rx** function helps build a regular expression to filter the filenames.
+```{r}
+#HYSPLIT_dir="./Trajectories/"
+traj_files_1000m=list.files(HYSPLIT_dir,pattern=glob2rx("*-height_1000-*"),full.names=TRUE)
+head(traj_files_1000m)
+readLines(traj_files_1000m[1])
+```
+###Reading HYSPLIT Trajectories
+Once the text for the HYSPLIT trajectory is read into R it can be parsed by separating the header information from the data block that contains the coordinates for the trajectory points. The HYSPLIT header varies in length based how many trajectories are requested and how meteorological data is used to build the file.  After adjusting for this variation, the 5 records (http://ready.arl.noaa.gov/HYSPLIT_trajinfo.php)
+stored in the header can be read and parsed into a named list format.   
+
+#### HYSPLIT Header Read Function
+```{r}
+read_HYSPLIT_header=function(x){
+   #RECORD 1
+   rec1_names=c("num_of_met_grids","traj_num")
+   rec2_names=c("met_Model_id","start_Year", "Month", "Day", "Hour", "fcst_Hour")
+   rec3_names=c("num_of_traj","dir_of_traj_calc","vertical_motion_calc_method")   
+   rec4_names=c("start_year","month","day","hour","start_lat","start_lon","start_height")
+   rec5_names=c("num_diag_vars","label_varid")
+   #Read RECORD 1
+   rec1=read.fwf(x,widths=c(6,6),header=FALSE,n=1,col.names=rec1_names) 
+   ngrids=as.numeric(rec1$num_of_met_grids[1])
+   #Read RECORD 2
+   rec2=read.fwf(x,widths=c(8,rep(x=6,times=5)),header=FALSE,skip=1,n=ngrids,col.names=rec2_names)
+   #Read RECORD 3
+   rec3=read.fwf(x,widths=c(6,rep(x=9,times=2)),header=FALSE,skip=ngrids+1,n=1,col.names=rec3_names,stringsAsFactors=FALSE)#use stringsAsFactors to avoid conversion to Factor prematurely
+   #get rid of extra whitespace around vertical motion type
+   rec3$vertical_motion_calc_method=str_trim(rec3$vertical_motion_calc_method)
+   ntraj=as.numeric(rec3$num_of_traj[1])
+   #Read RECORD 4
+   rec4=read.fwf(x,widths=c(rep(x=6,times=4),rep(9,times=3)),header=FALSE,skip=ngrids+2,n=ntraj,col.names=rec4_names)
+   #Read RECORD 5 TO ADJUSTS FOR MORE THAN 1 DIAG
+   num_diag=read.fwf(x,widths=c(6),header=FALSE,skip=ngrids+2+ntraj,n=1,col.names=rec5_names[1])$num_diag_vars
+   #Read RECORD 5 AGAIN
+   rec5=read.fwf(x,widths=c(6,rep(9,times=num_diag)),header=FALSE,skip=ngrids+2+ntraj,n=1,col.names=c(rec5_names[1],paste0(rec5_names[2],seq(num_diag))),stringsAsFactors=FALSE)
+   #BUILD OUTPUT LIST FORMAT NAMED BY RECORD NUMBER
+  rec_list=list(rec1,rec2,rec3,rec4,rec5)
+  names(rec_list)=c("rec1","rec2","rec3","rec4","rec5")
+  return(rec_list)
+
+}
+read_HYSPLIT_header(traj_files_1000m[1])
+```
+#### HYSPLIT Coordinate Data
+Now use the header information to read the rest of the file information and adjust the column labels
+```{r}
+read_HYSPLIT=function(x){
+  header=read_HYSPLIT_header(x)
+  header_len=sum(laply(header,nrow))
+  rec6_names=c("traj_num","met_grid_num","year","month","day","hour","minute",
+               "fcst_hour","traj_age_in_hours","lat","lon","height_AGL_in_m")
+  varid=header$rec5[1,-1]
+  rec6_names=str_trim(c(rec6_names,varid)) #adjust record column names
+  rec6=read.fwf(x,widths=c(rep(6,times=8),8,rep(9,times=3+length(varid))),header=FALSE,skip=8,col.names=rec6_names)
+}
+head(traj_files_1000m)
+HYSPLIT_data=read_HYSPLIT(traj_files_1000m[1])
+head(HYSPLIT_data,15)
+```
+### Using the **plyr** package to process multiple HYSPLIT files
+The next step is to use the **plyr** package to read a collection of trajectory files and organize the data by filename. 
+
+#### Storing headers from multiple HYSPLIT files into a list
+First do this for the header data using llply with will take the list of filenames and return an list of the headers labelled by their name
+```{r}
+library("plyr")
+library("stringr")
+HYSPLIT_headers=llply(traj_files_1000m[1:100], read_HYSPLIT_header)
+names(HYSPLIT_headers)=basename(traj_files_1000m[1:100])
+HYSPLIT_headers[[1]]
+```
+#### Storing Coordinates from multiple HYSPLIT files into a large dataframe
+Also do a similar task with the coordinate data except use the **ldply** to return the resulting trajectory data as an aggregated dataframe of all the trajectories.
+
+```{r}
+HYSPLIT_data=ldply(traj_files_1000m[1:100], function(x){
+  out=read_HYSPLIT(x)
+  out$filename=x; 
+  return(out)})
+nrow(HYSPLIT_data)
+head(HYSPLIT_data)
+```
+### Using ggplot to visualize trajectory data 
+From here is is possible to plot them in ggplot using the metadata in the coordinate dataframe to accentuate various aspects of the trajectory data.
+```{r,fig.height=6,fig.width=10}
+library("rworldxtra")
+library("ggplot2")
+data(countriesHigh)
+map_df=fortify(countriesHigh) #make map data ggplot ready
+
+###change to use the class for shape mapping
+plt=ggplot()+geom_path(data=map_df,aes(x=long,y=lat,group=group))
+#group defines what coordinates are grouped together to form a trajectory
+#in this case it is organized by filename and traj_num
+plt=plt+geom_path(data=HYSPLIT_data,
+                   aes(x=lon,y=lat,group=paste0(filename,"_traj",traj_num),
+                       colour=height_AGL_in_m))
+plt=plt+scale_colour_gradient("Traj Height (m)", 
+                      low="purple", high="green",trans="sqrt")
+plt=plt+coord_cartesian(xlim=c(-100,-50),ylim=c(35,55))
+
+plt=plt+theme_bw()
+plt
+```
+### Creating Spatial Line Objects in R
+Let convert the trajectory data into Spatial Objects (shapefiles) to facilitate geospatial processing.  In this case, we will be generate a SpatialLines object. See R spatial cheat sheet for more details (http://www.maths.lancs.ac.uk/~rowlings/Teaching/UseR2012/cheatsheet.html)
+
+```{r}
+library("plyr")
+#group and order coordinate to help build the trajectory paths
+HYSPLIT_data=arrange(HYSPLIT_data,filename,traj_num,-traj_age_in_hours)
+HYSPLIT_data$LINEID=paste0(HYSPLIT_data$filename,"_traj",HYSPLIT_data$traj_num)
+HYSPLIT_LineList=dlply(HYSPLIT_data, "LINEID",function(x){
+      traj_coords=subset(x,select=c("lon","lat"))
+      return(Line(traj_coords)) 
+      })
+#Assemble groups of trajectories under a Lines object and assign an ID base on filename
+HYSPLIT_Lns=dlply(HYSPLIT_data,.variables=c("filename"), function(x){
+  uniq_traj=unique(x$LINEID)
+  uniq_group=unique(x$filename)
+  out=Lines(HYSPLIT_LineList[uniq_traj],ID=uniq_group)
+  return(out)
+})
+latlong="+init=epsg:4326"
+HYSPLIT_spL=SpatialLines(HYSPLIT_Lns,proj4string=CRS(latlong))
+HYSPLIT_spL[1]
+```
+### Construct a raster object
+```{r,fig.height=6,fig.width=10}
+library("raster")
+library("ggplot2")
+rast1=raster(xmn=-100,xmx=-50,ymn=35,ymx=55,nrows=40,ncol=100,crs=CRS(latlong))
+traj_dens=rasterize(x=HYSPLIT_spL,rast1,fun="count")
+
+traj_dens_df=data.frame(rasterToPoints(traj_dens))
+head(traj_dens_df)
+plt=ggplot()
+plt=plt+geom_tile(data=traj_dens_df,aes(x=x,y=y,fill=layer))
+plt=plt+geom_path(data=map_df,aes(x=long,y=lat,group=group))
+plt=plt+geom_path(data=HYSPLIT_data,
+                   aes(x=lon,y=lat,group=paste0(filename,"_traj",traj_num)),
+                  colour="grey80",alpha=0.2)
+plt=plt+scale_fill_gradient("Traj Height (m)", 
+                      low="lightblue", high="darkred",trans="sqrt")
+plt=plt+coord_cartesian(xlim=c(-100,-50),ylim=c(35,55))
+plt
+```
