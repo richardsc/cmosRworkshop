@@ -3,6 +3,11 @@ Examples of Using the R "openair" Package for Model Evaluation
 
 #### by Junhua Zhang
 #### ARQI/AQRD/STB
+#### Environment Canada
+#### ARQI/AQRD/STB
+#### 4905 Dufferin Street
+#### Downsview, Ontario  M3H 5T4
+#### CANADA
 #### May 1,2014
 
 This documentation shows a few examples of how R and the “openair” package can be used for model evaluation purpose.  More detailed and sophisticated uses of the “openair” package are documented in its manual http://www.openair-project.org/Downloads/OpenAirManual.aspx.   The “openair” manual also provides excellent instruction on the basic concepts of R.

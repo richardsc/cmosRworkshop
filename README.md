@@ -30,6 +30,8 @@ Participants should feel free to bring specific questions and/or data sets, whic
 
 * `examples/`: some examples of common tasks/analysis
 
+* `met/`: examples of interest to atmospheric scientists, provided by A. Teakles and colleagues at EC
+
 * `sandbox/`: a sandbox for the workshop organizers to experiment with demos and ideas to use. 
 
 
