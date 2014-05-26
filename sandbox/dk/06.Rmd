@@ -16,7 +16,7 @@ t <- ymd(d[,1], tz="UTC") # daily data so ignore timezone
 Temperature <- d$Mean.TemperatureC
 Humidity <- d$Mean.Humidity
 Pressure <- d$Mean.Sea.Level.PressurehPa
-Month <- as.POSIXlt(t)$mon+1
+Month <- month(t)
 boxplot(Temperature ~ Month, ylab="Temperature (Hfx)", xlab="Month")
 ```
 
