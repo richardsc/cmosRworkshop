@@ -4,16 +4,21 @@ I thought I'd show how to work with archived env-canada atmospheric data, but
 the URLs that I used previously no longer work, and I cannot see any way to get
 data apart from one day at a time.
 
-So I went to [Weather Underground](www.wunderground.com), and found things, e.g.
+So I went to [Weather Underground](http://www.wunderground.com), and found things, e.g.
 [Halifax daily data from 1949](http://www.wunderground.com/history/airport/CYHZ/1949/1/26/CustomHistory.html?dayend=26&monthend=5&yearend=2014&req_city=NA&req_state=NA&req_statename=NA&format=1) is a CSV.
 
 ```{r 06,fig.cap="Halifax Weather", dpi=100}
+inUS <- TRUE  #WU returns different units depending on geoIP?
 library(memoise)
 rc <- memoise(read.csv)
 d <- rc("http://www.wunderground.com/history/airport/CYHZ/2013/5/26/CustomHistory.html?dayend=25&monthend=5&yearend=2014&req_city=NA&req_state=NA&req_statename=NA&format=1")
 library(lubridate)
 t <- ymd(d[,1], tz="UTC") # daily data so ignore timezone
-Temperature <- d$Mean.TemperatureC
+if (inUS) {
+    Temperature <- (d$Mean.TemperatureF - 32) * 5/9
+} else {
+    Temperature <- d$Mean.TemperatureC
+}
 Humidity <- d$Mean.Humidity
 Pressure <- d$Mean.Sea.Level.PressurehPa
 Month <- month(t)
