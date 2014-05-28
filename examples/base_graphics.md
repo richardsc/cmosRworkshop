@@ -247,24 +247,55 @@ Note now that the points at the extreme ends get "cut off" by the axis. This is 
 
 It is very common to add a legend to a plot to describe the different elements being plotted. This can be accomplished in R using the base graphics function `legend()`.
 
+The `legend()` function in R is "dumb" -- that is to say, unlike Matlab, the text, symbols, lines and colors that go into the legend are completely independent from the elements of the plot. This has the disadvantage that you need to carefully check your legend to make sure it displays the information that you want and that it is correct. On the other hand, it has the advantage that you can tweak the legend in any way that you want, without being constrained what you've actually plotted. As usual, do `?legend` to learn all about the arguments. Note that many of the arguments for specifying symbols and line types are the same as the plotting arguments that set them (e.g. `pch`, `cex`, `lwd`, etc)
+
+Let's again reproduce the plot from above, but add a legend that describes the different points:
+
+```r
+plot(pressure, temperature, pch = 21, bg = "grey")
+grid()
+points(pressure + pnoise, temperature + tnoise, pch = 22, bg = "red", cex = 0.75)
+legend("topleft", c("Original data", "Perturbed data"), pch = c(21, 22), pt.bg = c("grey", 
+    "red"), pt.cex = c(1, 0.75), bg = "white")  # blank out the grid behind it
+```
+
+![plot of chunk unnamed-chunk-17](figure/unnamed-chunk-17.png) 
+
+Note that the arguments `pt.bg` and `pt.cex` are used to specify the background color and size of the points, as `bg` and `cex` specify those parameters for the legend itself. 
+
+What if we want to add our linear fit?
+
+```r
+plot(pressure, temperature, pch = 21, bg = "grey")
+grid()
+points(pressure + pnoise, temperature + tnoise, pch = 22, bg = "red", cex = 0.75)
+lines(press.pred, temp.pred, lwd = 10, col = "pink")
+legend("topleft", c("Original data", "Perturbed data", "Linear fit"), pch = c(21, 
+    22, NA), pt.bg = c("grey", "red", NA), pt.cex = c(1, 0.75, NA), lwd = c(NA, 
+    NA, 10), col = c(NA, NA, "pink"), bg = "white")  # blank out the grid behind it
+```
+
+![plot of chunk unnamed-chunk-18](figure/unnamed-chunk-18.png) 
+
+Notice the use of `NA` when a particular parameter is not relevant -- e.g. the `pch` for the line, or the `lwd` for the two points.
+
+We can also use the legend function as a convenient way to place text inside the plot, though sometimes this is better accomplished using either the `text()` or `mtext()` functions. Here we summarize the fitted slope and intercept from the `m` model, and demonstrate `mtext` and `text`:
+
+```r
+plot(pressure, temperature, pch = 21, bg = "grey")
+grid()
+points(pressure + pnoise, temperature + tnoise, pch = 22, bg = "red", cex = 0.75)
+lines(press.pred, temp.pred, lwd = 10, col = "pink")
+legend("topleft", legend = substitute(T == a + b * p, list(a = format(coef(m)[[1]], 
+    digits = 2), b = format(coef(m)[[2]], digits = 2))), bg = "white", x.intersp = 0, 
+    title = "Regression results:", title.col = "red")
+mtext("Some text along the top, on the left", adj = 0)  # margin text
+mtext("Some text along the top, on the left", adj = 1)
+mtext("Some centered text along side=4", side = 4)
+text(pressure, temperature + 0.015, pressure, cex = 0.6)
+```
+
+![plot of chunk unnamed-chunk-19](figure/unnamed-chunk-19.png) 
 
 
-To include:
-
-* high-level plotting commands (e.g. `plot()`)
-
-* low-level plotting commands (e.g. `points()`, `lines()`, ... )
-
-* multi-figure plots (e.g. `mfrow/mfcol` and `layout()`)
-
-* graphing parameters, i.e. `par`
-
-    * `mar`, `mgp`, ...
-
-	* axes styles (e.g. `xaxs`)
-
-* adding text (e.g. `text()`, and `mtext()`)
-
-* legends
-
-* point out commonly used missing (or inflexible) functions, such as image plots, filled contours, palettes and colormaps.
+If you want to put text, or a legend at a specific location, use the `locator()` function to interactively click on the plot and return the coordinates where you clicked. 
