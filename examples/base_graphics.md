@@ -14,6 +14,7 @@ library(oce)
 ```
 
 ```
+## Loading required package: methods
 ## Loading required package: mapproj
 ## Loading required package: maps
 ```
