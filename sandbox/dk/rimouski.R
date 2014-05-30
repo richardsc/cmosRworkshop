@@ -7,7 +7,7 @@ library(oce)
 ## top <- 48.64969 - 0.02
 ## rimouski <- landsatTrim(image, list(latitude=bottom, longitude=left),
 ##                         list(latitude=top, longitude=right))
-if (!interactive()) png("rimouski_2013-10-09.png", width=7, height=8, unit="in", res=150, pointsize=14)
+if (!interactive()) png("rimouski_2013-10-09.png", width=7, height=7, unit="in", res=100, pointsize=12)
 load("rimouski.rda")
 plot(rimouski, col=oceColorsJet, zlim=c(0.125, 0.14))
 if (!interactive()) dev.off()
