@@ -1,8 +1,9 @@
-all: base_graphics.html
+all: base_graphics.html lm_example.html
 %.md: %.Rmd
 	Rscript -e 'library(knitr);knit("$<")'
-%.html: %.md
-	pandoc --css style.css $< > $@
+%.html: %.Rmd
+	#pandoc --css style.css $< > $@
+	Rscript -e 'library(knitr);knit2html("$<")'
 index.html: index.md
 	pandoc --css style.css $< > $@
 clean:

@@ -1,4 +1,10 @@
-# Linear models
+# Model fitting
+
+```{r echo=FALSE}
+opts_chunk$set(fig.path='figure/lm-')
+```
+
+## Linear Models
 
 Create some data, according to the formula
 $$
@@ -15,9 +21,107 @@ ep[II] <- abs(rnorm(II, sd=50))
 y <- x + ep
 plot(x, y, pch=21, bg='grey')
 grid()
+```
+
+We can fit a linear model to the data, using the `lm()` function, and add it to the plot:
+```{r}
 m1 <- lm(y ~ x)
+plot(x, y, pch=21, bg='grey')
+grid()
+abline(m1)
+```
+Note the effect that the outliers have on the inferred slope and intercept. We can get some stats about the fit examining the object returned by `lm()`, either by printing it to the screen, or by using the `summary()` function (remember, `summary()` is a generic function, and so it uses the `summary.lm()` version here):
+```{r}
+m1
+summary(m1)
+```
+
+We can also plot the `lm` object, to get a summary of the fit using various statistical tests:
+```{r}
+par(mfrow=c(2,2))
+plot(m1)
+```
+Clearly the outliers are strongly influencing the fit, and acting as leverage points.
+
+One way of doing a regression in the presence of outliers and leverage points is to use a "robust linear model" with the `rlm()` function. See `?rlm` for more details, but let's see what effect it has on our synthetic data:
+```{r}
 library(MASS)
 m2 <- rlm(y ~ x)
+par(mfrow=c(1,1))
+plot(x, y, pch=21, bg='grey')
+grid()
 abline(m1)
 abline(m2, lty=2)
+legend('topleft', c('lm', 'rlm'), lty=1:2)
 ```
+
+And we can similarly plot the results of the regression:
+```{r}
+par(mfrow=c(2,2))
+plot(m2)
+```
+Notice that the residuals no longer have a significant trend (panel 1), and that the leverage of the outliers is significantly reduce (panel 4).
+
+
+## Polynomial fits
+
+What if we wanted to fit data that is not linear in x? Let's modify the original problem to be quadratic:
+$$
+y(x) = x^2 + \epsilon
+$$
+and we'll increase the standard deviation of $\epsilon$ to 10, just for the heck of it, and forget about the outliers for now:
+```{r}
+par(mfrow=c(1,1))
+x <- seq(0, 10, 0.25)
+ep <- rnorm(x, sd=5)
+y <- x^2 + ep
+plot(x, y, pch=21, bg='grey')
+grid()
+```
+Now we make another call to `lm()`:
+```{r}
+m3 <- lm(y ~ I(x^2))
+summary(m3)
+```
+Note the use of the `I()` construct in the `formula` argument for `lm()`. See `?formula` for more details about the syntax of formulas, but basically it ensures that we do the fit against the *square* of x.
+
+Another way to do this, that I just learned from [stack overflow](http://stackoverflow.com/questions/3822535/fitting-polynomial-model-to-data-in-r) is to use the `poly()` function:
+```{r}
+mpoly2 <- lm(y ~ poly(x, 2))
+summary(mpoly2)
+```
+Note that this doesn't give exactly the same answer, because it includes the order 0, 1, and 2 terms in the polynomial, which were not included in the `m3` linear model.
+
+Since `abline()` won't work for this model, we now use `predict()` to plot the results:
+```{r}
+y.pred <- predict(m3)
+plot(x, y, pch=21, bg='grey')
+grid()
+lines(x, y.pred, lwd=2)
+```
+Unless told otherwise, predict will return predicted values for `y` at the original `x` locations.
+
+We can use the `confint()` function to get an idea of the 95% confidence limits for the fit:
+```{r}
+confint(m3)
+```
+and we can add them to the plot by specifying the `interval="confidence"` argument in `predict()`. Note that `predict()` now returns a 3-column matrix:
+```{r}
+y.pred <- predict(m3, interval = 'confidence')
+str(y.pred)
+plot(x, y, pch=21, bg='grey')
+grid()
+lines(x, y.pred[,1], lwd=2)
+lines(x, y.pred[,2], lty=2)
+lines(x, y.pred[,3], lty=2)
+```
+
+
+
+
+
+
+
+
+
+
