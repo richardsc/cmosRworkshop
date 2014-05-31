@@ -62,7 +62,7 @@ x
 y <- 2 * x + 4.5 + runif(x)
 plot(x, y)
 y0 <- y
-y[40:45] <- NaN
+y[40:45] <- NA
 plot(x, y)
 original_set <- list(x=x, y=y0)
 original_set$y
