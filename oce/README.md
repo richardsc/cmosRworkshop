@@ -38,6 +38,7 @@ Also note that to build packages from source may require utilities that are not 
 
 * Plot Levitus [sea-surface temperature](SST.Rmd) (dk).
 
+* Gridding and interpolating [gridding](gridding.Rmd) (dk and cr)
 
 
 ## Ideas for other things to show
