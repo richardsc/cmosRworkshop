@@ -14,5 +14,6 @@ if (rebuild) {
 }
 if (!interactive()) png("rimouski_2013-10-09.png", width=7, height=7, unit="in", res=100, pointsize=12)
 plot(rimouski, col=oceColorsJet, zlim=c(0.125, 0.14))
-points(-68.517016, 48.444152, pch=20, col='pink')
+## show Rimouski centre from google search (town hall?)
+points(-68.517016, 48.444152, pch=21, bg='white', col='black', cex=2)
 if (!interactive()) dev.off()
