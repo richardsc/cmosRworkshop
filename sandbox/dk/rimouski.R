@@ -1,4 +1,4 @@
-rebuild <- TRUE
+rebuild <- FALSE                       # set to TRUE to test new Oce
 library(oce)
 if (rebuild) {
     image <- read.landsat("~/Google Drive/LC80120262013282LGN00", band="panchromatic")
