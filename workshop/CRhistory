@@ -1,0 +1,237 @@
+getwd()
+data(met)
+library(oce)
+data(met)
+?met
+plot(met)
+plot(met)
+plot(met)
+plot(met)
+rm(list=ls())
+?list
+b <- list(1, 'vec', c(TRUE, FALSE))
+b[[3]][2]
+class(b[[3]][2])
+class(b[[3]][1])
+b[1]
+b[[3]][1]
+plot(iris)
+str(iris)
+myData <- list(first=1, second=head(iris))
+myData
+list(dim1=c(1,2), dim2=c('a', 'b'))
+tmp <- list(dim1=c(1,2), dim2=c('a', 'b'))
+class(tmp)
+tmp <- data.frame(dim1=c(1,2), dim2=c('a', 'b'))
+class(tmp)
+tmp
+tmp
+myData
+myData$new <- 1:100
+str(myData)
+length(myData)
+str(myData)
+tail(myData)
+attributes(myData)
+?names
+?smooth.spline
+x <- seq(0, 10, 0.1)
+y <- 2*x + runif(x)
+plot(x, y)
+y[45:50]
+y[45:50] <- NA
+smooth.spline(x, y)
+ok <- !is.na(y)
+sp <- smooth.spline(x, y)
+sp <- smooth.spline(x[ok], y[ok])
+plot(sp)
+plot(x, y)
+lines(sp)
+str(sp)
+x <- 1:100
+x
+y <- -cos(x)
+y
+x <- seq(0, 2*pi, 0.01)
+y <- -cos(x)
+plot(x, y)
+y <- -cos(x) + 1
+plot(x, y)
+II <- which(y > 1.5)
+sza <- y[!II]
+plot(x, sza)
+sza <- y
+plot(x, y)
+plot(x, y\sza)
+plot(x, sza)
+sza[II] <- NA
+plot(x, sza)
+y <- -cos(x) + 1 + rnorm(0.5)
+sza <- -cos(x) + 1 + rnorm(0.5)
+II <- which(sza > 1.5)
+sza[II] <- NA
+plot(x, sza)
+sza <- -cos(x) + 1 + rnorm(x, 0.5)
+sza[II] <- NA
+plot(x, sza)
+II
+sza <- -4(cos(x) + 1) + rnorm(x, 0.5)
+sza <- -4*(cos(x) + 1) + rnorm(x, 0.5)
+plot(x, sza)
+sza <- 4*(-cos(x) + 1) + rnorm(x, 0.5)
+plot(x, sza)
+II <- which(sza > 7)
+sza[II] <- NA
+plot(x, sza)
+source('~/presentations/cmosRworkshop/workshop/sza.R')
+source('~/presentations/cmosRworkshop/workshop/sza.R')
+fit
+lines(fit)
+y <- predict(fit)
+lines(y)
+fit <- lm(sza ~ cos(x) + sin(x))
+fit
+y <- predict(fit)
+y
+str(y)
+lines(x, y)
+plot(y)
+length(x)
+length(y)
+plot(x, sza)
+fit <- lm(sza ~ cos(x) + sin(x), na.exclude=TRUE)
+?lm
+fit <- lm(sza ~ cos(x) + sin(x), na.action=na.exclude)
+str(fit)
+y <- predict(fit)
+plot(x, sza)
+lines(x, fit)
+y <- predict(fit, x)
+y <- predict(fit, list(x=x))
+lines(x, fit)
+str(fit)
+str(y)
+predict(fit, list(x=x))
+predict(fit
+)
+class(predict(fit))
+typeof(predict(fit))
+fit
+y <- predict(fit)
+y
+y <- predict(fit, newdata=list(x=x))
+y
+plot(x, y)
+y <- predict(fit)
+str(y)
+plot(x, y)
+plot(x, sza)
+lines(x, y)
+lines(x, y, lwd=3)
+y <- predict(fit, x)
+y <- predict(fit, newdata=list(x=x))
+lines(x, y)
+source('~/presentations/cmosRworkshop/workshop/sza.R')
+source('~/presentations/cmosRworkshop/workshop/sza.R')
+source('~/presentations/cmosRworkshop/workshop/sza.R')
+rm(list=ls()
+)
+ls()
+plot(rnorm(10000))
+install.packages('oce')
+library(oce)
+data(ctd)
+class(ctd)
+str(ctd)
+ctd[['temperature']]
+ctd[['pressure']]
+plot(ctd)
+class(ctd)
+?plot.ctd
+plot.ctd(ctd)
+?plot.ctd
+plot.ctd
+plot(ctd, which=1)
+plot(ctd, which='temperature')
+?subset
+?subset.ctd
+ctd[['pressure']]
+ctdnew <- subset(ctd, pressure > 5)
+plot(ctdnew)
+?swTheta
+plotTS(ctd)
+?plotTS
+plotTS(ctd, eos='teos'
+)
+?mapPlot
+?plot.ctd
+example(plot.ctd)
+plot(ctd, which='temperature')
+points(ctd[['temperature']] + rnorm(ctd[['temperature']]), ctd[['pressure']], col='red')
+plot(ctd[['temperature']], ctd[['pressure']], col='red')
+?update.packages
+?read.adp
+data(adp)
+ls()
+?adp
+plot(adp)
+plot(adp, which=1)
+?image
+?imagep
+image(volcano)
+imagep(volcano)
+?imagep
+imagep(volcano, col=oceColorsJet)
+x <- seq(0, 2*pi, 0.01)
+sza <- 4*(-cos(x) + 1) + rnorm(x, 0.5)
+II <- which(sza > 7)
+sza[II] <- NA
+ls()
+rm(list=ls()
+)
+ls()
+x <- seq(0, 2*pi, 0.01)
+sza <- 4*(-cos(x) + 1) + rnorm(x, 0.5)
+II <- which(sza > 7)
+sza[II] <- NA
+ls()
+plot(x, sza)
+plot(x, sza, type='l')
+?lm
+plot(x, sza, type='l')
+?lm
+fit1 <- lm(sza ~ x)
+fit1
+abline(fit1)
+fit2 <- lm(sza ~ cos(x))
+fit2
+?abline
+class(fit2)
+szaPred <- predict(lm)
+szaPred <- predict(fit2)
+szaPred
+str(szaPred)
+points(x, szaPred, col='red')
+lengt(x)
+length(x)
+length(szaPred)
+?lm
+?predict.lm
+szaPred <- predict(fit2, newdata=list(x=x))
+length(szaPred)
+points(x, szaPred, col='red')
+?lm
+lm(y=x)
+fit <- lm(sza ~ cos(x) + sin(x))
+fit
+fit$coefficients
+fit$coefficients[2]
+class(fit)
+typeof(fit)
+str(fit)
+fit
+summary(fit)
+summary(fit)
+install.packages('ncdf4')
+?savehistory
+savehistory('CRhistory')
