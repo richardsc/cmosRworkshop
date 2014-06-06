@@ -22,17 +22,19 @@ Participants should feel free to bring specific questions and/or data sets, whic
 [3]: http://www.rstudio.com/ide/download/desktop
  
 
-## Proposed outline of directories
+## Directories
 
 * `intro/`: material for the introduction portion
 
-* `oce/`: material related to introducting the `oce` package
-
 * `examples/`: some examples of common tasks/analysis
+
+* `oce/`: material related to introducting the `oce` package
 
 * `met/`: examples of interest to atmospheric scientists, provided by A. Teakles and colleagues at EC
 
-* `sandbox/`: a sandbox for the workshop organizers to experiment with demos and ideas to use. 
+* `sandbox/`: a sandbox for the workshop organizers to experiment with demos and ideas to use.
+
+* `workshop/`: Some of the saved material from the workshop, including the fitting example provided at the end.
 
 
 ## Some other resources
