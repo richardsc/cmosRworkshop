@@ -6,7 +6,7 @@ statistical computing, analysis, and visualization.
 * It is **free software** and **open source**. It was born in 1993 and is
 still under active development.
 
-* It is widely used in academia and industry.
+* It is widely used in academia, government, and industry.
 
 * R provides many built-in code units via specialized packages; it is basically
 a great toolbox!
